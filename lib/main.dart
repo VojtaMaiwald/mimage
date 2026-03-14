@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mimage/canvas.dart';
+import 'package:mimage/widgets/canvas.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,9 +12,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mimage',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent)),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
+      ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent, brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.redAccent,
+          brightness: Brightness.dark,
+        ),
       ),
       home: const Canvas(),
     );
