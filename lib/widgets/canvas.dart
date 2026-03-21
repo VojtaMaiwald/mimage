@@ -116,7 +116,7 @@ class _CanvasState extends State<Canvas> {
     });
   }
 
-  Widget _buildHandle(
+  Widget _buildResizeHandle(
     Handle handle,
     CanvasImage image,
     int index,
@@ -127,11 +127,18 @@ class _CanvasState extends State<Canvas> {
     double? right,
     double? bottom,
   ) {
+    const double hitboxPadding = 32.0;
+
+    final double? pTop = (top == 0 && bottom != 0) ? -hitboxPadding : top;
+    final double? pBottom = (bottom == 0 && top != 0) ? -hitboxPadding : bottom;
+    final double? pLeft = (left == 0 && right != 0) ? -hitboxPadding : left;
+    final double? pRight = (right == 0 && left != 0) ? -hitboxPadding : right;
+
     return Positioned(
-      top: top,
-      left: left,
-      right: right,
-      bottom: bottom,
+      top: pTop,
+      left: pLeft,
+      right: pRight,
+      bottom: pBottom,
       child: Center(
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -163,12 +170,16 @@ class _CanvasState extends State<Canvas> {
             });
           },
           child: Container(
-            width: handleSize,
-            height: handleSize,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: handleBorderSize),
+            padding: const EdgeInsets.all(hitboxPadding),
+            color: Colors.transparent,
+            child: Container(
+              width: handleSize,
+              height: handleSize,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: handleBorderSize),
+              ),
             ),
           ),
         ),
@@ -220,7 +231,7 @@ class _CanvasState extends State<Canvas> {
         centerDy = cropR.bottom;
     }
 
-    final double hitSize = length + 60.0; // Enlarge hit area
+    final double hitSize = length + 180.0; // Enlarge hit area
     final double halfHit = hitSize / 2;
     final Color handleColor = Theme.of(context).colorScheme.primary;
     // Using passed borderWidth directly instead of thickness / 2
@@ -318,7 +329,7 @@ class _CanvasState extends State<Canvas> {
       child: DecoratedBox(
         key: image.key,
         position: DecorationPosition.foreground,
-        decoration: isSelected
+        decoration: isSelected && _selectionMode != SelectionMode.crop
             ? BoxDecoration(
                 border: Border.all(color: Theme.of(context).colorScheme.primary, width: borderWidth),
               )
@@ -378,14 +389,14 @@ class _CanvasState extends State<Canvas> {
         clipBehavior: Clip.none,
         children: [
           Padding(padding: EdgeInsets.all(handlePadding), child: imageContent),
-          _buildHandle(Handle.topLeft, image, index, handleSize, handleBorderSize, 0, 0, null, null),
-          _buildHandle(Handle.topCenter, image, index, handleSize, handleBorderSize, 0, 0, 0, null),
-          _buildHandle(Handle.topRight, image, index, handleSize, handleBorderSize, 0, null, 0, null),
-          _buildHandle(Handle.centerLeft, image, index, handleSize, handleBorderSize, 0, 0, null, 0),
-          _buildHandle(Handle.centerRight, image, index, handleSize, handleBorderSize, 0, null, 0, 0),
-          _buildHandle(Handle.bottomLeft, image, index, handleSize, handleBorderSize, null, 0, null, 0),
-          _buildHandle(Handle.bottomCenter, image, index, handleSize, handleBorderSize, null, 0, 0, 0),
-          _buildHandle(Handle.bottomRight, image, index, handleSize, handleBorderSize, null, null, 0, 0),
+          _buildResizeHandle(Handle.topLeft, image, index, handleSize, handleBorderSize, 0, 0, null, null),
+          _buildResizeHandle(Handle.topCenter, image, index, handleSize, handleBorderSize, 0, 0, 0, null),
+          _buildResizeHandle(Handle.topRight, image, index, handleSize, handleBorderSize, 0, null, 0, null),
+          _buildResizeHandle(Handle.centerLeft, image, index, handleSize, handleBorderSize, 0, 0, null, 0),
+          _buildResizeHandle(Handle.centerRight, image, index, handleSize, handleBorderSize, 0, null, 0, 0),
+          _buildResizeHandle(Handle.bottomLeft, image, index, handleSize, handleBorderSize, null, 0, null, 0),
+          _buildResizeHandle(Handle.bottomCenter, image, index, handleSize, handleBorderSize, null, 0, 0, 0),
+          _buildResizeHandle(Handle.bottomRight, image, index, handleSize, handleBorderSize, null, null, 0, 0),
         ],
       );
     } else if (showCropHandles) {
@@ -394,7 +405,7 @@ class _CanvasState extends State<Canvas> {
       double handleLength = (minDim * 0.2).clamp(20.0, 200.0);
       handleLength = math.min(handleLength, cropMinDim / 3);
       final double handleThickness = math.max(4.0, handleLength * 0.25);
-      final Color barrierColor = Colors.black.withValues(alpha: 0.5);
+      final Color barrierColor = Colors.black.withValues(alpha: 0.85);
 
       content = Stack(
         clipBehavior: Clip.none,
@@ -898,18 +909,13 @@ class _CanvasState extends State<Canvas> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        FloatingActionButton(
-                          heroTag: 'declineBtn',
+                        FilledButton.tonalIcon(
                           onPressed: _declineChanges,
-                          backgroundColor: Colors.redAccent,
-                          child: const Icon(Icons.close, color: Colors.white),
+                          icon: const Icon(Icons.close),
+                          label: const Text('Cancel'),
+                          style: FilledButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
                         ),
-                        FloatingActionButton(
-                          heroTag: 'acceptBtn',
-                          onPressed: _acceptChanges,
-                          backgroundColor: Colors.green,
-                          child: const Icon(Icons.check, color: Colors.white),
-                        ),
+                        FilledButton.icon(onPressed: _acceptChanges, icon: const Icon(Icons.check), label: const Text('Apply')),
                       ],
                     ),
                   ),
