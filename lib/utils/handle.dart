@@ -1,4 +1,4 @@
-enum ResizeHandle {
+enum Handle {
   topLeft,
   topCenter,
   topRight,
