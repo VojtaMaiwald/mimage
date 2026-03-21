@@ -82,12 +82,6 @@ class _CanvasState extends State<Canvas> {
     });
   }
 
-  void _changeMode() {
-    setState(() {
-      _selectionMode = SelectionMode.values[(_selectionMode.index + 1) % SelectionMode.values.length];
-    });
-  }
-
   Widget _buildResizeHandle(
     ResizeHandle handle,
     CanvasImage image,
@@ -525,12 +519,11 @@ class _CanvasState extends State<Canvas> {
     }
   }
 
-  Widget _fab() {
+  Widget? _fab() {
     if (_selectedIndex == null) {
       return FloatingActionButton(onPressed: _pickImage, tooltip: 'Pick Image', child: const Icon(Icons.add_photo_alternate));
-    } else {
-      return FloatingActionButton(onPressed: _changeMode, tooltip: _selectionMode.description, child: Icon(_selectionMode.icon));
     }
+    return null;
   }
 
   @override
@@ -586,6 +579,27 @@ class _CanvasState extends State<Canvas> {
                           child: const Icon(Icons.check, color: Colors.white),
                         ),
                       ],
+                    ),
+                  ),
+                ),
+              if (_selectedIndex != null)
+                Positioned(
+                  bottom: 16.0,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(
+                    child: Center(
+                      child: SegmentedButton<SelectionMode>(
+                        segments: SelectionMode.values.map((mode) {
+                          return ButtonSegment(value: mode, icon: Icon(mode.icon), label: Text(mode.description));
+                        }).toList(),
+                        selected: {_selectionMode},
+                        onSelectionChanged: (Set newSelection) {
+                          setState(() {
+                            _selectionMode = newSelection.first;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
