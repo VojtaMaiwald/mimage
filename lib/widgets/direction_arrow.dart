@@ -4,12 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mimage/utils/canvas_image.dart';
 
 class DirectionArrow extends StatelessWidget {
-  const DirectionArrow({
-    required this.transformationController,
-    required this.images,
-    required this.constraints,
-    super.key,
-  });
+  const DirectionArrow({required this.transformationController, required this.images, required this.constraints, super.key});
 
   final TransformationController transformationController;
   final List<CanvasImage> images;
@@ -54,10 +49,7 @@ class DirectionArrow extends StatelessWidget {
         final double width = MediaQuery.sizeOf(context).width;
 
         // Off-screen check (within bounds + margin)
-        if (screenX >= -(width / 2) &&
-            screenX <= vw + (width / 2) &&
-            screenY >= -(height / 2) &&
-            screenY <= vh + (height / 2)) {
+        if (screenX >= -(width / 2) && screenX <= vw + (width / 2) && screenY >= -(height / 2) && screenY <= vh + (height / 2)) {
           return const SizedBox.shrink();
         }
 
@@ -71,9 +63,7 @@ class DirectionArrow extends StatelessWidget {
           child: Transform.rotate(
             angle: angle,
             child: Padding(
-              padding: EdgeInsets.only(
-                left: MediaQuery.sizeOf(context).shortestSide - _arrowSize,
-              ),
+              padding: EdgeInsets.only(left: MediaQuery.sizeOf(context).shortestSide - _arrowSize),
               child: Icon(
                 Icons.keyboard_double_arrow_right_rounded,
                 size: _arrowSize,
