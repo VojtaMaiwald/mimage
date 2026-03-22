@@ -117,7 +117,7 @@ class _CanvasState extends State<Canvas> {
     });
   }
 
-  Future<void> _handleExportImage(bool isPng) async {
+  Future<void> _handleExportImage({required bool isPng}) async {
     if (_exportRectPixels == null) {
       return;
     }
@@ -185,8 +185,9 @@ class _CanvasState extends State<Canvas> {
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
+        spacing: 16,
         children: [
-          if (_images.isNotEmpty) ...[
+          if (_images.isNotEmpty)
             FloatingActionButton.extended(
               onPressed: () {
                 setState(() {
@@ -233,8 +234,6 @@ class _CanvasState extends State<Canvas> {
               label: const Text('Export'),
               heroTag: 'export',
             ),
-            const SizedBox(height: 16),
-          ],
           FloatingActionButton.extended(
             onPressed: _pickImage,
             icon: const Icon(Icons.add_photo_alternate),
@@ -478,6 +477,7 @@ class _CanvasState extends State<Canvas> {
                   child: SafeArea(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         FilledButton.tonalIcon(
                           onPressed: () {
@@ -490,16 +490,16 @@ class _CanvasState extends State<Canvas> {
                           label: const Text('Cancel'),
                           style: FilledButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
                         ),
-                        Row(
+                        Column(
                           children: [
-                            FilledButton.icon(
-                              onPressed: () => _handleExportImage(true), // png
+                            FloatingActionButton.extended(
+                              onPressed: () => _handleExportImage(isPng: true),
                               icon: const Icon(Icons.image),
                               label: const Text('Save PNG'),
                             ),
-                            const SizedBox(width: 8),
-                            FilledButton.icon(
-                              onPressed: () => _handleExportImage(false), // jpg
+                            const SizedBox(height: 16),
+                            FloatingActionButton.extended(
+                              onPressed: () => _handleExportImage(isPng: false),
                               icon: const Icon(Icons.image),
                               label: const Text('Save JPG'),
                             ),
